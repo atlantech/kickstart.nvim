@@ -823,13 +823,30 @@ require('lazy').setup({
         css = { 'prettier' },
         html = { 'prettier' },
         python = { 'black' },
-        typescript = { 'prettier' },
-        typescriptreact = { 'prettier' },
-        javascript = { 'prettier' },
-        javascriptreact = { 'prettier' },
+        typescript = { 'eslint_d', 'prettier' },
+        typescriptreact = { 'eslint_d', 'prettier' },
+        javascript = { 'eslint_d', 'prettier' },
+        javascriptreact = { 'eslint_d', 'prettier' },
+        json = { 'prettier' },
         yaml = { 'prettier' },
         sql = { 'sleek' },
         dart = { 'dart' },
+      },
+      formatters = {
+        eslint_d = {
+          command = 'eslint_d',
+          args = { '--stdin', '--stdin-filename', '$FILENAME', '--fix-to-stdout' },
+          stdin = true,
+          -- чтобы запуск шёл из корня проекта
+          cwd = function(ctx)
+            return vim.fs.dirname(vim.fs.find({ 'eslint.config.cjs', 'package.json' }, { upward = true, path = ctx.filename })[1])
+          end,
+        },
+        prettier = {
+          command = 'prettier',
+          args = { '--stdin-filepath', '$FILENAME' },
+          stdin = true,
+        },
       },
     },
   },
