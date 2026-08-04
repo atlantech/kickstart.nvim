@@ -215,6 +215,10 @@ vim.keymap.set('n', 'tp', '<cmd>tabprevious<CR>', { desc = '[T]ab [P]revious' })
 vim.keymap.set('n', 'tc', '<cmd>tabclose<CR>', { desc = '[T]ab [C]lose' })
 vim.keymap.set('n', 'to', '<cmd>tabnew<CR>', { desc = '[T]ab [O]pen (new)' })
 
+-- Buffer management keymaps
+vim.keymap.set('n', '<leader>bd', '<cmd>bdelete<CR>', { desc = '[B]uffer [D]elete' })
+vim.keymap.set('n', '<leader>bw', '<cmd>bwipeout<CR>', { desc = '[B]uffer [W]ipeout' })
+
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
 
@@ -226,6 +230,31 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
   callback = function()
     vim.hl.on_yank()
+  end,
+})
+
+-- Set filetype for OpenTofu files
+vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
+  pattern = '*.tofu',
+  desc = 'Set filetype for OpenTofu files',
+  callback = function()
+    vim.bo.filetype = 'tofu'
+  end,
+})
+
+-- Set filetype for Ansible files
+vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
+  pattern = {
+    '*/playbooks/*.yml',
+    '*/playbooks/*.yaml',
+    '*/roles/*/tasks/*.yml',
+    '*/roles/*/tasks/*.yaml',
+    '*/roles/*/handlers/*.yml',
+    '*/roles/*/handlers/*.yaml',
+  },
+  desc = 'Set filetype for Ansible files',
+  callback = function()
+    vim.bo.filetype = 'yaml.ansible'
   end,
 })
 
@@ -443,6 +472,11 @@ require('lazy').setup({
           file_browser = {
             hijack_netrw = true,
           },
+          live_grep_args = {
+            auto_quoting = true,
+            default_mappings = {},
+            mappings = {},
+          },
         },
       }
 
@@ -459,7 +493,9 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
       vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
       vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
-      vim.keymap.set('n', '<leader>sg', require('telescope').extensions.live_grep_args.live_grep_args, { desc = '[S]earch by [G]rep' })
+      vim.keymap.set('n', '<leader>sg', function()
+        require('telescope').extensions.live_grep_args.live_grep_args { additional_args = { '--ignore-case' } }
+      end, { desc = '[S]earch by [G]rep' })
       vim.keymap.set('n', '<leader>sG', builtin.git_status, { desc = '[S]earch [G]it status' })
       vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
@@ -526,6 +562,7 @@ require('lazy').setup({
       'saghen/blink.cmp',
     },
     config = function()
+      local ok, err = pcall(function()
       local util = require 'lspconfig/util'
       -- Brief aside: **What is LSP?**
       --
@@ -577,8 +614,31 @@ require('lazy').setup({
           -- or a suggestion from your LSP for this to activate.
           map('gra', vim.lsp.buf.code_action, '[G]oto Code [A]ction', { 'n', 'x' })
 
-          -- Find references for the word under your cursor.
-          map('grr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
+          local function test_last_sorter()
+            local sorters = require 'telescope.sorters'
+            local fzy = require 'telescope.algos.fzy'
+            return sorters.Sorter:new {
+              scoring_function = function(_, prompt, _, entry)
+                if prompt == '' or not entry.filename then
+                  return 0
+                end
+                local display = entry.display and entry:display() or ''
+                if not fzy.has_match(prompt, display) then
+                  return -1
+                end
+                local score = fzy.score(prompt, display)
+                local lower = entry.filename:lower()
+                if lower:find 'test' or lower:find 'spec' or lower:find '__tests__' then
+                  score = score - 10
+                end
+                return score
+              end,
+            }
+          end
+
+          map('grr', function()
+            require('telescope.builtin').lsp_references { sorter = test_last_sorter() }
+          end, '[G]oto [R]eferences')
 
           -- Jump to the implementation of the word under your cursor.
           --  Useful when your language has ways of declaring types without an actual implementation.
@@ -612,7 +672,7 @@ require('lazy').setup({
           ---@param bufnr? integer some lsp support methods only in specific files
           ---@return boolean
           local function client_supports_method(client, method, bufnr)
-            if vim.fn.has 'nvim-0.11' == 1 then
+            if vim.fn.has 'nvim-0.11' == 1 or vim.fn.has 'nvim-0.12' == 1 then
               return client:supports_method(method, bufnr)
             else
               return client.supports_method(method, { bufnr = bufnr })
@@ -654,7 +714,7 @@ require('lazy').setup({
           -- This may be unwanted, since they displace some of your code
           if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_inlayHint, event.buf) then
             map('<leader>th', function()
-              vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
+              vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled(), { bufnr = event.buf })
             end, '[T]oggle Inlay [H]ints')
           end
         end,
@@ -694,6 +754,19 @@ require('lazy').setup({
       --  When you add blink.cmp, luasnip, etc. Neovim now has *more* capabilities.
       --  So, we create new capabilities with blink.cmp, and then broadcast that to the servers.
       local capabilities = require('blink.cmp').get_lsp_capabilities()
+      vim.lsp.config('gdscript', {
+        capabilities = capabilities,
+      })
+      vim.lsp.enable 'gdscript'
+
+      local vue_language_server_path = vim.fn.stdpath 'data' .. '/mason/packages/vue-language-server/node_modules/@vue/language-server'
+      local vue_plugin = {
+        name = '@vue/typescript-plugin',
+        location = vue_language_server_path,
+        languages = { 'vue' },
+        configNamespace = 'typescript',
+      }
+      local tsserver_filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact', 'vue' }
 
       -- Enable the following language servers
       --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
@@ -748,7 +821,33 @@ require('lazy').setup({
         erlangls = {},
         bashls = {},
         dockerls = {},
-        ts_ls = {},
+        terraformls = {
+          filetypes = { 'terraform', 'tf', 'terraform-vars', 'tofu' },
+        },
+        ansiblels = {
+          filetypes = { 'yaml.ansible' },
+          settings = {
+            ansible = {
+              ansible = {
+                path = 'ansible',
+              },
+              python = {
+                interpreterPath = 'python3',
+              },
+              executionEnvironment = {
+                enabled = false,
+              },
+            },
+          },
+        },
+        ts_ls = {
+          init_options = {
+            plugins = { vue_plugin },
+          },
+          filetypes = tsserver_filetypes,
+          root_dir = util.root_pattern('tsconfig.json', 'jsconfig.json', 'package.json', '.git'),
+        },
+        vue_ls = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -789,7 +888,8 @@ require('lazy').setup({
       -- for you, so that they are available from within Neovim.
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
-        'stylua', -- Used to format Lua code
+        'stylua',
+        'vue-language-server',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -808,6 +908,10 @@ require('lazy').setup({
           end,
         },
       }
+      end)
+      if not ok then
+        vim.notify("LSP config error: " .. tostring(err), vim.log.levels.ERROR)
+      end
     end,
   },
 
@@ -1125,8 +1229,10 @@ require('lazy').setup({
   },
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
+    branch = 'main',
+    lazy = false,
     build = ':TSUpdate',
-    main = 'nvim-treesitter.configs', -- Sets main module to use for opts
+    main = 'nvim-treesitter', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
       ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
