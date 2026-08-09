@@ -1,0 +1,6 @@
+WRN 2026-04-10T06:01:12.026 ?.57657    server_start:197: Failed to start server: operation not permitted: /var/folders/r3/hx41w48x1fxc0jmr8l7w13tc0000gp/T/nvim.aleanovich/74y0By/nvim.57657.0
+WRN 2026-07-04T17:38:27.891 ?.7630     server_start:197: Failed to start server: operation not permitted: /var/folders/r3/hx41w48x1fxc0jmr8l7w13tc0000gp/T/nvim.aleanovich/P9HfQ0/nvim.7630.0
+WRN 2026-07-28T17:46:51.534 ?.57085    server_start:197: Failed to start server: operation not permitted: /var/folders/r3/hx41w48x1fxc0jmr8l7w13tc0000gp/T/nvim.aleanovich/U9a6Wf/nvim.57085.0
+WRN 2026-07-30T10:25:34.324 ?.10667    server_start:197: Failed to start server: operation not permitted: /var/folders/r3/hx41w48x1fxc0jmr8l7w13tc0000gp/T/nvim.aleanovich/pESrXu/nvim.10667.0
+WRN 2026-08-04T10:05:35.519 ?.15502    server_start:197: Failed to start server: operation not permitted: /var/folders/r3/hx41w48x1fxc0jmr8l7w13tc0000gp/T/nvim.aleanovich/rHdFB6/nvim.15502.0
+WRN 2026-08-04T10:06:49.107 ?.17203    server_start:197: Failed to start server: operation not permitted: /var/folders/r3/hx41w48x1fxc0jmr8l7w13tc0000gp/T/nvim.aleanovich/XjhUoo/nvim.17203.0
