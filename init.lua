@@ -173,6 +173,8 @@ do
   vim.o.confirm = true
 end
 
+require 'custom.options'
+
 -- ============================================================
 -- SECTION 2: KEYMAPS & AUTOCMDS
 -- basic keymaps, basic autocmds
@@ -252,6 +254,9 @@ do
     callback = function() vim.hl.on_yank() end,
   })
 end
+
+require 'custom.keymaps'
+require 'custom.autocmds'
 
 -- ============================================================
 -- SECTION 3: PLUGIN MANAGER INTRO
@@ -382,18 +387,29 @@ do
   -- change the command under that to load whatever the name of that colorscheme is.
   --
   -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-  vim.pack.add { gh 'folke/tokyonight.nvim' }
-  ---@diagnostic disable-next-line: missing-fields
-  require('tokyonight').setup {
-    styles = {
-      comments = { italic = false }, -- Disable italics in comments
+  vim.pack.add { gh 'catppuccin/nvim' }
+  require('catppuccin').setup {
+    flavour = 'mocha',
+    transparent_background = false,
+    integrations = {
+      gitsigns = true,
+      mason = true,
+      mini = true,
+      native_lsp = { enabled = true },
+      neotree = true,
+      noice = true,
+      notify = true,
+      telescope = true,
+      treesitter = true,
+      treesitter_context = true,
+      which_key = true,
     },
   }
 
   -- Load the colorscheme here.
   -- Like many other themes, this one has different styles, and you could load
   -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-  vim.cmd.colorscheme 'tokyonight-night'
+  vim.cmd.colorscheme 'catppuccin'
 
   -- Highlight todo, notes, etc in comments
   vim.pack.add { gh 'folke/todo-comments.nvim' }
@@ -703,8 +719,6 @@ do
     -- But for many setups, the LSP (`ts_ls`) will work just fine
     -- ts_ls = {},
 
-    stylua = {}, -- Used to format Lua code
-
     -- Special Lua Config, as recommended by neovim help docs
     lua_ls = {
       on_init = function(client)
@@ -762,7 +776,7 @@ do
   -- You can press `g?` for help in this menu.
   local ensure_installed = vim.tbl_keys(servers or {})
   vim.list_extend(ensure_installed, {
-    -- You can add other tools here that you want Mason to install
+    'stylua', -- Used to format Lua code
   })
 
   require('mason-tool-installer').setup { ensure_installed = ensure_installed }
@@ -969,17 +983,17 @@ do
   --  Here are some example plugins that I've included in the Kickstart repository.
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
-  -- require 'kickstart.plugins.debug'
-  -- require 'kickstart.plugins.indent_line'
-  -- require 'kickstart.plugins.lint'
-  -- require 'kickstart.plugins.autopairs'
-  -- require 'kickstart.plugins.neo-tree'
-  -- require 'kickstart.plugins.gitsigns' -- adds gitsigns recommended keymaps
+  require 'kickstart.plugins.debug'
+  require 'kickstart.plugins.indent_line'
+  require 'kickstart.plugins.lint'
+  require 'kickstart.plugins.autopairs'
+  require 'kickstart.plugins.neo-tree'
+  require 'kickstart.plugins.gitsigns' -- adds gitsigns recommended keymaps
 
   -- NOTE: You can add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  -- require 'custom.plugins'
+  require 'custom.plugins'
 end
 
 -- The line beneath this is called `modeline`. See `:help modeline`
