@@ -11,7 +11,38 @@ check(vim.o.tabstop == 4 and vim.o.shiftwidth == 4 and not vim.o.expandtab, 'ind
 
 check(vim.fn.maparg('tn', 'n') ~= '', 'tab-next keymap is missing')
 check(vim.fn.maparg('<leader>sg', 'n') ~= '', 'live-grep keymap is missing')
+check(vim.fn.maparg('<leader>gv', 'n') ~= '', 'Git vertical-diff keymap is missing')
 check(vim.fn.maparg('<F9>', 'n') ~= '', 'debug breakpoint keymap is missing')
+
+local completion_keymap = require('blink.cmp.config').keymap
+check(completion_keymap['<C-l>'] ~= nil, 'completion trigger keymap is missing')
+check(completion_keymap['<C-space>'] == false, 'conflicting Ctrl-Space completion keymap is still active')
+
+local telescope_sorters = require 'custom.telescope_sorters'
+check(telescope_sorters.is_test_file { filename = 'internal/service_test.go' }, 'Go test file was not detected')
+check(not telescope_sorters.is_test_file { filename = 'internal/latest/service.go' }, 'production file was misclassified as a test')
+
+local reference_sorter = telescope_sorters.test_last()
+local production_entry = { filename = 'internal/service.go' }
+local test_entry = { filename = 'internal/service_test.go' }
+local function reference_score(prompt, entry)
+  reference_sorter:_start(prompt)
+  local score = reference_sorter:scoring_function(prompt, entry.filename, entry)
+  reference_sorter:_finish(prompt)
+  return score
+end
+
+reference_sorter:_init()
+local initial_production_score = reference_score('', production_entry)
+local initial_test_score = reference_score('', test_entry)
+local production_score = reference_score('service', production_entry)
+local test_score = reference_score('service', test_entry)
+local unmatched_score = reference_score('no-match', production_entry)
+reference_sorter:_destroy()
+check(initial_test_score > initial_production_score, 'test references are not initially ranked after production references')
+check(production_score ~= -1 and test_score ~= -1, 'matching references were filtered out')
+check(test_score > production_score, 'test references are not ranked after production references')
+check(unmatched_score == -1, 'unmatched references are not filtered')
 
 for _, module in ipairs {
   'custom.plugins.completion',

@@ -1,7 +1,11 @@
 vim.pack.add { 'https://github.com/onsails/lspkind.nvim' }
 
 require('blink.cmp').setup {
-  keymap = { preset = 'default' },
+  keymap = {
+    preset = 'default',
+    ['<C-space>'] = false,
+    ['<C-l>'] = { 'show', 'show_documentation', 'hide_documentation' },
+  },
   appearance = { nerd_font_variant = 'mono' },
   completion = {
     documentation = { auto_show = true, auto_show_delay_ms = 0 },

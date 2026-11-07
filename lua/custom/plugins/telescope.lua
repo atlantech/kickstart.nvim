@@ -42,21 +42,7 @@ vim.keymap.set(
 vim.keymap.set('n', '<leader>sG', builtin.git_status, { desc = '[S]earch [G]it status' })
 vim.keymap.set('n', '<leader>fb', function() telescope.extensions.file_browser.file_browser() end, { desc = '[F]ile [B]rowser' })
 
-local function test_last_sorter()
-  local sorters = require 'telescope.sorters'
-  local fzy = require 'telescope.algos.fzy'
-  return sorters.Sorter:new {
-    scoring_function = function(_, prompt, _, entry)
-      if prompt == '' or not entry.filename then return 0 end
-      local display = entry.display and entry:display() or ''
-      if not fzy.has_match(prompt, display) then return -1 end
-      local score = fzy.score(prompt, display)
-      local lower = entry.filename:lower()
-      if lower:find 'test' or lower:find 'spec' or lower:find '__tests__' then score = score - 10 end
-      return score
-    end,
-  }
-end
+local test_last_sorter = require('custom.telescope_sorters').test_last
 
 vim.api.nvim_create_autocmd('LspAttach', {
   group = vim.api.nvim_create_augroup('custom-telescope-lsp-attach', { clear = true }),
