@@ -10,6 +10,7 @@ check(vim.o.relativenumber, 'relative line numbers are disabled')
 check(vim.o.tabstop == 4 and vim.o.shiftwidth == 4 and not vim.o.expandtab, 'indentation options were not preserved')
 
 check(vim.fn.maparg('tn', 'n') ~= '', 'tab-next keymap is missing')
+check(vim.fn.maparg('<leader>tt', 'n') ~= '', 'terminal-tab keymap is missing')
 check(vim.fn.maparg('<leader>sg', 'n') ~= '', 'live-grep keymap is missing')
 check(vim.fn.maparg('<leader>gv', 'n') ~= '', 'Git vertical-diff keymap is missing')
 check(vim.fn.maparg('<F9>', 'n') ~= '', 'debug breakpoint keymap is missing')
@@ -50,7 +51,6 @@ for _, module in ipairs {
   'custom.plugins.lsp',
   'custom.plugins.noice',
   'custom.plugins.telescope',
-  'custom.plugins.toggleterm',
   'custom.plugins.treesitter_context',
   'custom.plugins.vim_fugitive',
 } do
