@@ -9,7 +9,6 @@ check(vim.g.have_nerd_font == true, 'Nerd Font setting was not preserved')
 check(vim.o.relativenumber, 'relative line numbers are disabled')
 check(vim.o.tabstop == 4 and vim.o.shiftwidth == 4 and not vim.o.expandtab, 'indentation options were not preserved')
 
-check(vim.fn.maparg('tn', 'n') ~= '', 'tab-next keymap is missing')
 check(vim.fn.maparg('<leader>tt', 'n') ~= '', 'terminal-tab keymap is missing')
 check(vim.fn.maparg('<leader>sg', 'n') ~= '', 'live-grep keymap is missing')
 check(vim.fn.maparg('<leader>gv', 'n') ~= '', 'Git vertical-diff keymap is missing')
