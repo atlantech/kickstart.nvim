@@ -68,7 +68,6 @@ local servers = {
   ts_ls = {
     init_options = { plugins = { vue_plugin } },
     filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact', 'vue' },
-    root_dir = root_pattern { 'tsconfig.json', 'jsconfig.json', 'package.json', '.git' },
   },
   vue_ls = {},
 }
