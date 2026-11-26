@@ -22,6 +22,7 @@ local vue_plugin = {
 ---@type table<string, vim.lsp.Config>
 local servers = {
   clangd = {},
+  templ = {},
   gopls = {
     cmd = { 'gopls' },
     filetypes = { 'go', 'gomod', 'gowork', 'gotmpl' },

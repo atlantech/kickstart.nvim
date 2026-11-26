@@ -13,6 +13,7 @@ local parsers = {
   'go',
   'gomod',
   'gosum',
+  'gotmpl',
   'hcl',
   'html',
   'ini',
@@ -41,4 +42,5 @@ local parsers = {
 }
 
 require('nvim-treesitter').install(parsers)
+vim.filetype.add { extension = { gotmpl = 'gotmpl', tmpl = 'gotmpl' } }
 vim.treesitter.language.register('terraform', 'tofu')
