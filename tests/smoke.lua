@@ -16,7 +16,8 @@ check(vim.fn.maparg('<leader>rt', 'n') ~= '', 'Overseer task list keymap is miss
 check(vim.fn.maparg('<leader>ra', 'n') ~= '', 'Overseer task action keymap is missing')
 check(vim.fn.maparg('<leader>sg', 'n') ~= '', 'live-grep keymap is missing')
 check(vim.fn.maparg('<leader>gv', 'n') ~= '', 'Git vertical-diff keymap is missing')
-check(vim.fn.maparg('<F9>', 'n') ~= '', 'debug breakpoint keymap is missing')
+check(vim.fn.maparg('<F9>', 'n') == '', 'debug breakpoint keymap should be disabled')
+check(not package.loaded.dap and not package.loaded.dapui, 'DAP plugins should not be loaded')
 
 local completion_keymap = require('blink.cmp.config').keymap
 check(completion_keymap['<C-l>'] ~= nil, 'completion trigger keymap is missing')
