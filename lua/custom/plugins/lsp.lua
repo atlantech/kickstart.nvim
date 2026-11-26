@@ -82,3 +82,8 @@ for name, config in pairs(servers) do
   vim.lsp.config(name, config)
   vim.lsp.enable(name)
 end
+
+vim.api.nvim_create_user_command('GoRefresh', function()
+  vim.cmd.checktime()
+  vim.cmd 'lsp restart gopls'
+end, { desc = 'Reload externally changed buffers and restart gopls' })

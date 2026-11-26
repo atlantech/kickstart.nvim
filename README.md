@@ -27,6 +27,16 @@ In the task list, press Enter for actions and Ctrl-T to open output in a tab.
 Closing an output window or tab keeps its task running; use Stop to end it.
 The existing `<leader>tt` shortcut opens an ordinary interactive terminal.
 
+## External Go edits
+
+When the cursor pauses in an unmodified Go buffer, Neovim checks that file for
+external edits. This also applies after a jump within the same file.
+
+Run `:GoRefresh` if diagnostics or jumps are stale after another editor or a
+generator changes Go files. It checks loaded buffers for changes on disk, then
+restarts `gopls` so it can pick up newly added files. If a file has unsaved edits
+in Neovim and also changed on disk, Neovim prompts before reloading it.
+
 ## Installation
 
 ### Install Neovim
