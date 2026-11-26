@@ -10,6 +10,10 @@ check(vim.o.relativenumber, 'relative line numbers are disabled')
 check(vim.o.tabstop == 4 and vim.o.shiftwidth == 4 and not vim.o.expandtab, 'indentation options were not preserved')
 
 check(vim.fn.maparg('<leader>tt', 'n') ~= '', 'terminal-tab keymap is missing')
+check(vim.fn.exists ':OverseerShell' == 2, 'Overseer shell command is missing')
+check(vim.fn.maparg('<leader>rs', 'n') ~= '', 'Overseer shell keymap is missing')
+check(vim.fn.maparg('<leader>rt', 'n') ~= '', 'Overseer task list keymap is missing')
+check(vim.fn.maparg('<leader>ra', 'n') ~= '', 'Overseer task action keymap is missing')
 check(vim.fn.maparg('<leader>sg', 'n') ~= '', 'live-grep keymap is missing')
 check(vim.fn.maparg('<leader>gv', 'n') ~= '', 'Git vertical-diff keymap is missing')
 check(vim.fn.maparg('<F9>', 'n') ~= '', 'debug breakpoint keymap is missing')
@@ -50,6 +54,7 @@ for _, module in ipairs {
   'custom.plugins.lsp',
   'custom.plugins.neo_tree',
   'custom.plugins.noice',
+  'custom.plugins.overseer',
   'custom.plugins.telescope',
   'custom.plugins.treesitter_context',
   'custom.plugins.vim_fugitive',

@@ -10,6 +10,23 @@ A starting point for Neovim that is:
 
 **NOT** a Neovim distribution, but instead a starting point for your configuration.
 
+## Running servers and tasks
+
+Use [overseer.nvim](https://github.com/stevearc/overseer.nvim) for long-running
+commands, for example `:OverseerShell pnpm dev` or `:OverseerShell go run ./cmd/server`.
+Overseer manages these tasks and stops running jobs when Neovim exits with `:qa`.
+
+| Shortcut | Action |
+| --- | --- |
+| `<leader>rs` | Prompt for a shell command |
+| `<leader>rr` | Select a task template (such as a package script or build target) |
+| `<leader>rt` | Toggle the task list |
+| `<leader>ra` | Choose a task action, including Stop and Restart |
+
+In the task list, press Enter for actions and Ctrl-T to open output in a tab.
+Closing an output window or tab keeps its task running; use Stop to end it.
+The existing `<leader>tt` shortcut opens an ordinary interactive terminal.
+
 ## Installation
 
 ### Install Neovim
