@@ -48,6 +48,7 @@ for _, module in ipairs {
   'custom.plugins.completion',
   'custom.plugins.formatting',
   'custom.plugins.lsp',
+  'custom.plugins.neo_tree',
   'custom.plugins.noice',
   'custom.plugins.telescope',
   'custom.plugins.treesitter_context',
