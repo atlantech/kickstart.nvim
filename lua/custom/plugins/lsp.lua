@@ -87,3 +87,6 @@ vim.api.nvim_create_user_command('GoRefresh', function()
   vim.cmd.checktime()
   vim.cmd 'lsp restart gopls'
 end, { desc = 'Reload externally changed buffers and restart gopls' })
+
+-- Prefer each project's Oxlint installation; keep it out of Mason's tool list.
+vim.lsp.enable 'oxlint'

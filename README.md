@@ -27,6 +27,16 @@ In the task list, press Enter for actions and Ctrl-T to open output in a tab.
 Closing an output window or tab keeps its task running; use Stop to end it.
 The existing `<leader>tt` shortcut opens an ordinary interactive terminal.
 
+## JavaScript and TypeScript linting
+
+Oxlint is enabled through Neovim's LSP client and prefers the project's local
+installation. In projects adopting Oxlint, run `pnpm add -D oxlint` and create
+or migrate an Oxlint configuration. Open a JavaScript or TypeScript file, then
+use `:LspOxlintFixAll` to apply fixes once the server attaches.
+
+Prettier and the existing ESLint formatter configuration remain available.
+Oxlint is managed by each project rather than installed through Mason.
+
 ## External Go edits
 
 When the cursor pauses in an unmodified Go buffer, Neovim checks that file for
